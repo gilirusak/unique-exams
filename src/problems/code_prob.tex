@@ -1,0 +1,59 @@
+%%%%%%%%%%%%%%%%%%%%%% 4 %%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Mutually Recursive Code Analysis [16 points]}\label{sec:mutual}
+After much research, you've finally arrived at function to how many pairs of flip flops you should bring to the beach, since flip flops tend to disappear in the sand and get washed away in the tide, and you need to have at least one pair when you leave.
+
+Consider the following implementation of the mutually recursive flip and flop functions: \\
+
+\begin{lstlisting}[escapechar=\%, language=python,frame=single]
+from scipy import stats
+from random import choice
+
+def flip():
+    eel = choice([1, 2, 3])
+    if eel == 1: return %\FLIPONE{}%
+    if eel == 2: return %\FLIPTWO{}% + flip()
+    return %\FLIPTHREE{}% + flop()
+
+def flop():
+    fish = stats.poisson.rvs(%\FLOPRATE{}%)
+    if fish < %\FLOPBOUND{}%: return %\FLOPSCALAR{}%
+    return 2 * flip()
+    
+\end{lstlisting}
+
+\begin{enumerate}[label=\alph*.]
+
+%%%%%%%%%%%%%%%%%%%%%%
+\item (6 points) What are the two smallest numbers that can be returned by a call to flop, and what are the probabilities of each being returned?
+	
+		
+		\answercodea{.3\paperheight}{\problempagebreak{4}}{problems/code_soln_a}
+		
+		
+\end{enumerate}
+(The code block for this problem is included here for your convenience)
+\begin{lstlisting}[escapechar=\%, language=python,frame=single]
+from scipy import stats
+from random import choice
+
+def flip():
+    eel = choice([1, 2, 3])
+    if eel == 1: return %\FLIPONE{}%
+    if eel == 2: return %\FLIPTWO{}% + flip()
+    return %\FLIPTHREE{}% + flop()
+
+def flop():
+    fish = stats.poisson.rvs(%\FLOPRATE{}%)
+    if fish < %\FLOPBOUND{}%: return %\FLOPSCALAR{}%
+    return 2 * flip()
+    
+\end{lstlisting}
+\begin{enumerate}[label=\alph*.]
+%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{enumi}{1}
+\item (10 points) What are the expected return values of each of the two functions, \texttt{flip} and \texttt{flop}? Please provide an analytical derivation (i.e., do not just run code).
+	
+		\answercodeb{.44\paperheight}{\vspace*{1em}}{problems/code_soln_b}
+
+\end{enumerate}

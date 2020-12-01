@@ -1,0 +1,66 @@
+% written PDF
+\newcommand{\answerspace}[2]{
+\begin{shaded}
+\begin{answer}
+\input{#2}
+\end{answer}
+\end{shaded}
+}
+\newcommand{\answernumeric}[4]{
+\begin{shaded}
+\begin{answer}
+\input{#4}
+\end{answer}
+\end{shaded}
+}
+
+\newcommand{\answerchoice}[3]{
+\begin{shaded}
+\begin{answer}
+\input{#3}
+\end{answer}
+\end{shaded}
+\vspace*{2em}
+}
+
+\newcommand{\problempagebreak}[1]{
+% ignore, to conserve space
+%\vfill
+%\begin{center}
+%\textcolor{gray}{\textit{Problem #1 continued on next page.}}
+%\end{center}
+%\newpage
+}
+
+\newcommand{\answercoding}[2]
+{
+\input{#2}
+}
+
+\newcommand{\answercodeb}[3]
+{
+\begin{shaded}
+\begin{answer}
+\input{#3}
+\end{answer}
+\end{shaded}
+#2
+}
+
+\newcommand{\answercodea}[3]
+{
+\begin{shaded}
+\begin{answer}
+\input{#3}
+\end{answer}
+\end{shaded}
+#2
+}
+
+
+%%%%%%% TODO: add this in to check for optional + add args
+%%\if\relax\detokenize{#1}\relax
+%%  %<EMPTY>%
+%%\else
+%  %<NON EMPTY>%
+%\fi

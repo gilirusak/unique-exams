@@ -1,0 +1,3 @@
+Let $X$ be the number of visitors in $\FISHSCALE{}$ minutes. $X\sim\Poi(\lambda = \FISHPROD{})$, where using stoichiometry, the average number of (independent) visitors in $\FISHSCALE{}$ minutes is $\FISHPROD{}$ users per minute. $E[X] = \lambda = \FISHPROD{}$.
+
+Alternatively, let $X_i$ be the number of visitors in the $i^{\text{th}}$ minute, where $X_i\sim\Poi(\lambda = \FISHRATE{})$ and $E[X_i] = \FISHRATE{}$. Note that $X = X_1 + X_2 + \dots + X_{\FISHSCALE{}}$ and therefore by linearity of expectation, $E[X]= \sum_{i=1}^{\FISHSCALE{}} E[X_i] = \FISHSCALE{} (\FISHRATE{}) = \FISHPROD{}$.

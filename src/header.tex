@@ -1,0 +1,31 @@
+\makeatletter
+% the handout title goes here
+\begin{textblock*}{0.5\textwidth}(0\textwidth,0mm)
+\@author
+\end{textblock*}
+
+\begin{textblock*}{0.5\textwidth}(0\textwidth,5mm)
+CS 109
+\end{textblock*}
+
+\begin{textblock*}{0.5\textwidth}(.5\textwidth,0mm)
+\hfill
+\@handoutid
+\end{textblock*}
+
+\begin{textblock*}{0.5\textwidth}(.5\textwidth,5mm)
+\hfill
+\@date
+\end{textblock*}
+
+\begin{center}
+\vspace*{2mm}
+{\Large \@title} \\
+\end{center}
+\vskip -9mm
+\vskip \@spaceadjust
+\rule{\textwidth}{0.5pt}
+
+\vspace*{-4mm}
+\hfill {\footnotesize \@ack}
+\makeatother

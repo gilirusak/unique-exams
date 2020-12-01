@@ -1,0 +1,16 @@
+Because $\SAMPLESIZE{}$ is large and the variance (which is $\NORMALVAR{}$) is greater than 20, we can approximate Bin($\SAMPLESIZE{}$, 0.$\STANFORDRATE{}$) the distribution as Normal, with $\mu$ equal to $\NORMALMEAN{}$ and $\sigma^{2}$ of $\NORMALVAR{}$.  We need to reframe the our $\THRESHOLD{}$ in terms of the number of standard deviations below the estimated mean. \\
+\\
+Let X represent the number of Stanford undergraduates who hold part-time jobs, and let Y approximate X using $N(\NORMALMEAN{},\NORMALVAR{})$.  That means that:
+
+\begin{equation*}
+\begin{split}
+P(X > \THRESHOLD{}) &= P(Y > \THRESHOLDCC) \\
+                    &= 1 - P(Y < \THRESHOLDCC) \\
+                    &= 1 - \Phi(\frac{\THRESHOLDCC - \NORMALMEAN{}}{\NORMALSTD{}}) \\
+                    &= 1 - \Phi(-\NORMALZ{}) \\
+                    &= \Phi(\NORMALZ{}) \\
+                    &= \BERNOULLISOLND{}
+\end{split}
+\end{equation*}
+
+    

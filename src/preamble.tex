@@ -1,0 +1,171 @@
+\usepackage{newtxtext,newtxmath}
+
+\usepackage{amsmath}
+ \let\Bbbk\relax
+\usepackage{amssymb}
+  \let\openbox\relax
+\usepackage{amsthm}
+	% packages that allow mathematical formatting
+\usepackage{comment}
+  % comment out sections
+
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subfigure} 
+\usepackage{multirow}
+	% multi-row
+
+\usepackage{import}
+	% package that allows for relative imports
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,positioning,automata}
+	% package that allows you to include graphics
+
+\usepackage[hidelinks]{hyperref}
+	% and links
+\usepackage{algpseudocode}
+  % and algorithms
+\usepackage{pythonhighlight}
+%\usepackage[cachedir=_minted-caches]{minted} % minted doesn't work with macros
+	% and code
+\usepackage{listings} % supports escapechars for macros
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+  basicstyle=\footnotesize\ttfamily, % Default font
+  backgroundcolor=\color{white},   % choose the background color
+  breaklines=true,                 % automatic line breaking only at whitespace
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  keywordstyle=\color{blue},       % keyword style
+  stringstyle=\color{mymauve},     % string literal style
+}
+
+\usepackage[tmargin=1in,bmargin=1in,lmargin=0.8in,rmargin=1in]{geometry}
+\frenchspacing
+	% one space after periods
+\raggedbottom
+	% don't put extra space between sections
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt} 
+\setlength{\headheight}{14.5pt} 
+	% allows custom headers
+
+\lhead{}
+\rhead{-- \thepage{} --}
+\cfoot{}
+	% page numbering
+
+\usepackage{titlesec}
+\titleformat*{\section}{\large\bfseries}
+\titleformat*{\subsection}{\large\itshape\bfseries}
+\titleformat*{\subsubsection}{\normalsize\bfseries}
+\titleformat*{\paragraph}{\normalsize\bfseries}
+\titleformat*{\subparagraph}{\normalsize\bfseries}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{3mm plus 3mm minus 1mm}
+\titlespacing*{\section}{0pt}{2mm plus 4mm minus 1mm}{-2mm plus 1mm minus 0mm}
+\titlespacing*{\subsection}{0pt}{0mm plus 4mm minus 1mm}{-2mm plus 1mm minus 0mm}
+\titlespacing*{\subsubsection}{0pt}{0mm plus 4mm minus 1mm}{-2mm plus 1mm minus 0mm}
+\titlespacing*{\paragraph}{0pt}{0mm plus 3mm minus 1mm}{1mm plus 1mm minus 0mm}
+  % adjust fonts and spacing
+
+\usepackage{framed}
+\begin{comment}
+\newenvironment{framed}
+    {
+    \hspace*{-3mm}
+    \begin{tabular}{|p{\textwidth}|}
+    \hline
+    }
+    { 
+    \\[2mm]\hline
+    \end{tabular} 
+    \vspace*{-2mm}
+    }
+  % boxes around paragraphs with titles
+\end{comment}
+
+\usepackage{textpos}
+\usepackage[super]{nth}
+\usepackage{mathtools}
+\usepackage{mathdots}
+
+\usepackage{textcomp}
+  % \textonehalf for '8 1/2" x 11"'
+
+\usepackage{enumitem}
+% \setlist{nolistsep}
+  % configure display of enumerations [a), b), c)...]
+\usepackage[normalem]{ulem}
+  % \sout{} for strikethrough
+\usepackage{booktabs}
+\usepackage{diagbox}
+  % configure display of tables
+
+\newcommand{\vocab}[1]{\textbf{#1}}
+\renewcommand{\|}{\mid}
+
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\newcommand\tabhead[1]{\small\textbf{#1}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\E}{E}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\SD}{\operatorname{SD}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\bigO}{O}
+
+\newcommand{\Uni}{\operatorname{Uni}}
+\newcommand{\Ber}{\operatorname{Ber}}
+\newcommand{\Bin}{\operatorname{Bin}}
+\newcommand{\Geo}{\operatorname{Geo}}
+\newcommand{\NegBin}{\operatorname{NegBin}}
+\newcommand{\Zipf}{\operatorname{Zipf}}
+\newcommand{\HypG}{\operatorname{HypG}}
+\newcommand{\Poi}{\operatorname{Poi}}
+\newcommand{\Beta}{\operatorname{Beta}}
+\newcommand{\N}{\operatorname{N}}
+\newcommand{\Exp}{\operatorname{Exp}}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\makeatletter
+\newcommand{\ack}[1]{\def \@ack {#1}}
+\newcommand{\handoutid}[1]{\def \@handoutid {#1}}
+\newcommand{\spaceadjust}[1]{\def \@spaceadjust {#1}}
+\makeatother
+
+\ack{}
+\handoutid{}
+\spaceadjust{0mm}
+
+\renewcommand{\labelenumi}{\arabic{enumi}.}
+\renewcommand{\labelenumii}{\alph{enumii}.}
+
+% needs to be included with template for signatures
+\newcommand{\blank}{\hrulefill{}}
+\newcommand{\ulfrule}{\xleaders\hbox{\underline{ }}\hfill\kern0pt}
+
+% needs to be included with template for answer space                                                                                 
+\theoremstyle{definition}                                                        
+\newtheorem*{answer}{Answer}                                                     
+                                                                                 
+\definecolor{shadecolor}{gray}{0.95}                                             
+                                                                                 
+\setlength{\parindent}{0pt}                                                      
+                                                                                 
+\pagestyle{fancy}                                                                
+\setlength{\headheight}{15pt}                                                    
+                                                                                 
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}     

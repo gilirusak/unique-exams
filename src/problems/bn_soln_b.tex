@@ -1,0 +1,9 @@
+By Law of Total Probability,
+
+\[ P(A + B = \VISITORSTOTAL{}) = P(A + B = \VISITORSTOTAL{} | D = 0) P(D = 0) + P(A + B = \VISITORSTOTAL{} | D = 1) P(D = 1). \]
+
+$A$ and $B$ are conditionally independent Poisson random variables given $D$, and therefore $A + B | D = 0 \sim\Poi(\lambda = \DZEROLAMBSUM{})$ and $A + B | D = 1 \sim\Poi(\lambda = \DONELAMBSUM{})$. Using the Poisson PMF,
+
+\[
+P(A + B = \VISITORSTOTAL{}) = \frac{\DZEROLAMBSUM{}^{\VISITORSTOTAL{}} e^{-\DZEROLAMBSUM{}}}{\VISITORSTOTAL{}!} \cdot (1 - \DPROB) + \frac{\DONELAMBSUM{}^{\VISITORSTOTAL{}} e^{-\DONELAMBSUM{}}}{\VISITORSTOTAL{}!} \cdot (\DPROB) \approx \PROBSUMTOT{}.
+\]

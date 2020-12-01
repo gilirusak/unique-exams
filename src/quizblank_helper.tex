@@ -1,0 +1,79 @@
+% written PDF
+\newcommand{\answerspace}[2]{\vspace*{#1}}
+\newcommand{\answernumeric}[4]{
+\vspace{#1}
+\begin{tabular}{l  p{.5in} p{2in} l}
+In addition to providing justification above, \\
+please compute a numeric answer:& 
+&           % if using LaTeX template, write your answer on this line,
+		    % keeping the ampersand on the left
+&  #2 \\
+\cline{3-3} 
+\end{tabular}
+#3
+}
+
+\newcommand{\answerchoice}[3]{
+\vspace*{2em} \hspace*{0.5in}
+#1 \hspace*{2pt} / \hspace*{2pt} #2
+
+\vspace*{2em}
+Explanation: \\
+}
+
+\newcommand{\problempagebreak}[1]{
+\vfill
+\begin{center}
+\textcolor{gray}{\textit{Problem #1 continued on next page.}}
+\end{center}
+\newpage
+}
+
+\newcommand{\answercoding}[2]
+{
+\input{#1}
+}
+
+%%%%%%% Quiz 2 only
+\newcommand{\answercodea}[3]{
+\vspace{#1}
+\begin{tabular}{p{1.6in} p{1.5in} b{.9in} p{1.5in}}
+\multicolumn{4}{l}{In addition to providing justification above, please compute numeric answers:} \\ \\
+Smallest \texttt{flop} return: &
+        % write your flop smallest return value here (replace line)
+& probability: &
+		% write your flop probability here (replace line)
+\\ \cline{2-2} \cline{4-4} \\
+Second smallest \\
+\texttt{flop} return: &
+        % write your flop second smallest return value here (replace line)
+& probability: &
+		% write your flop probability here (replace line)
+\\
+\cline{2-2} \cline{4-4}
+\end{tabular}
+#2
+}
+
+\newcommand{\answercodeb}[3]{
+\vspace{#1}
+\begin{tabular}{l  p{1.7in} p{.1in} p{1.7in}}
+\multirow{3}{2in}{In addition to providing justification above,
+please compute numeric answers:} \\ \\
+&  \texttt{flip}:
+			% write your flip answer here (replace line)
+& &  \texttt{flop}:
+			% write your flop answer here (replace line)
+\\
+\cline{2-2} 
+\cline{4-4}
+\end{tabular}
+#2
+}
+
+%%%%%%% TODO: add this in to check for optional + add args
+%%\if\relax\detokenize{#1}\relax
+%%  %<EMPTY>%
+%%\else
+%  %<NON EMPTY>%
+%\fi

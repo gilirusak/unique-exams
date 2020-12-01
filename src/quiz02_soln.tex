@@ -1,0 +1,41 @@
+% Only update the three lines indicated below.
+% This file is parsed with the generate_latex.py script.
+% The problem snippets files themselves should already reference
+% the corresponding solution snippet file.
+
+\documentclass[12pt]{article}
+\input{preamble.tex}
+\input{quizsoln_helper.tex}           % 1 of 3 changed lines
+\input{id_defs.tex}
+
+\title{CS109 Quiz \#2 Solutions}      % 2 of 3 changed lines
+\handoutid{Quiz \#2}
+\author{Lisa Yan and Jerry Cain}
+\date{November 2, 2020}               % 3 of 3 changed lines
+
+\ack{Exam \# \EXAMID}
+
+
+\begin{document}
+
+\input{header.tex}
+
+%%%
+\input{directions.tex}
+
+\input{problems/bernoulli_defs}
+\input{problems/bernoulli_prob}
+\input{problems/poisson_defs}
+\input{problems/poisson_prob}
+\input{problems/bn_defs}
+\input{problems/bn_prob}
+\input{problems/code_defs}
+\input{problems/code_prob}
+
+\vfill
+\begin{center}
+\textcolor{gray}{\textit{That's the end of this quiz!}}
+\end{center}
+\newpage
+
+\end{document}

@@ -1,0 +1,81 @@
+
+%%%%%%%%%%%%%%%%%%%%%% 4 %%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Stanford Fish Sticks [30 points]}
+\begin{minipage}{0.41\textwidth}
+Fish Sticks (the same frozen meal company) now wants to model their hourly homepage traffic from Stanford. The company decides to model two different behaviors for homepage visits according to the Bayesian Network on the right:
+\end{minipage}
+%
+\begin{minipage}{0.58\textwidth}
+% bayesian network picture
+\begin{center}
+\begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=3cm,on grid,initial/.style    ={}]
+  \node[state]          (d)                        {$D$};
+  \node[state]          (a) [below left=1.5cm and 1cm of d]    {$A$};
+  \node[state]          (b) [below right=1.5cm and 1cm of d]    {$B$};
+\tikzset{mystyle/.style={->}} 
+\tikzset{every node/.style={fill=white}} 
+\path (d)     edge [mystyle]    (a)
+      (d)     edge [mystyle]    (b);
+\node[above right=0.5cm and 2.25cm of d]
+{
+$D\sim\Ber(p = \DPROB{})$
+};
+\node[above left=0.5cm and 2.25cm of a]
+{
+\begin{tabular}{l c}
+ & $A$ \\
+ \cmidrule(l){2-2}
+ $D = 0$: & $\Poi(\DZEROLAMBA)$ \\
+ $D = 1$: & $\Poi(\DONELAMBA)$ \\
+\end{tabular}
+};
+\node[above right=0.5cm and 2.25cm of b]
+{
+\begin{tabular}{l c}
+ & $B$ \\
+ \cmidrule(l){2-2}
+ $D = 0$: & $\Poi(\DZEROLAMBB)$ \\
+ $D = 1$: & $\Poi(\DONELAMBB)$ \\
+\end{tabular}
+};
+\end{tikzpicture}
+\end{center}
+\end{minipage}
+
+$A$ and $B$ are the numbers of Stanford students and faculty, respectively, who visit the Fish Sticks homepage in an hour. Since Fish Sticks does not know when Stanford people eat, the company models demand as a ``hidden'' Bernoulli random variable $D$, which determines the distribution of $A$ and $B$. Recall that in a Bayesian Network, random variables are conditionally independent given their parents.  For example, given $D = 0$, $A\sim\Poi(\DZEROLAMBA{})$ and $B\sim\Poi(\DZEROLAMBB{})$, two independent random variables.
+
+\begin{enumerate}[label=\alph*.]
+
+%%%%%%%%%%%%%%%%%%%%%%
+\item (6 points) Given that $\VISITORSA$ users from group $A$ visit the homepage in the next hour, what is the probability that $D = 0$?
+	
+		
+		\answernumeric{.17\paperheight}{}{\vspace*{1em}}{problems/bn_soln_a}
+		
+
+%%%%%%%%%%%%%%%%%%%%%%
+\item (10 points) What is the probability that in the next hour, the \textit{total} number of users who visit the homepage from groups $A$ and $B$ is equal to $\VISITORSTOTAL$, i.e., what is $P(A + B = \VISITORSTOTAL{})$?
+	
+		\answernumeric{.19\paperheight}{}{\problempagebreak{3}}{problems/bn_soln_b}
+
+
+		
+%%%%%%%%%%%%%%%%%%%%%%
+		\item (14 points) Simulate $P(A + B = \texttt{total})$, where $\texttt{total} = \VISITORSTOTAL{}$, by implementing the \\ \texttt{infer\_prob\_total(total, ntrials)} function below using rejection sampling.
+		\begin{itemize}[itemsep=0pt]
+			\item \texttt{total} is the total number of users from groups $A$ and $B$ in the event $A + B = \texttt{total}$.
+			\item \texttt{ntrials} is the number of observations to generate for rejection sampling.
+			\item \texttt{prob} is the return value to the function, where $\texttt{prob} \approx P(A + B = \texttt{total})$.
+			\item The function call is implemented for you at the bottom of the code block.
+		\end{itemize}
+		You can call the following functions from the \texttt{scipy} package:
+		\begin{itemize}[itemsep=0pt]
+		\item \texttt{stats.bernoulli.rvs($p$)}, which randomly generates a 0 or 1 with probability $p$
+		\item \texttt{stats.poisson.rvs($\lambda$)}, which randomly generates a value according to a Poisson distribution with parameter $\lambda$
+		\end{itemize}
+		You are not required to use lists or NumPy arrays in this question (but you can if you want). \textbf{Pseudocode is fine} as long as your code accurately conveys your approach. We are not grading on style nor syntax.
+		
+		\answercoding{problems/bn_prob_c_code}{problems/bn_soln_c}
+		
+\end{enumerate}
