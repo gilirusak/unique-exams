@@ -1,0 +1,7 @@
+Let $X \sim \text{Bin}(n_1 = \NA{}, p_1 = \PA{})$ and $Y\sim\text{Bin}(n_2 = \NB{}, p_2 = \PB{})$ be the number of viewers who watch videos $A$ and $B$, respectively. We would like to compute $P(X > 2Y) = P(X - 2Y > 0)$.
+
+Recall that we can use the Normal approximation if $n$ is large (i.e., $n > 20$) and variance is large (i.e., $np(1-p) > 10$); otherwise, if $n > 100$ and $p < 0.05$, we can use the Poisson approximation. We first note that $X$ and $Y$ can be approximated as independent Normal random variables, where $X \approx N_X\sim\mathcal{N}(\mu_X = \MUX{}, \sigma_X^2 = \VARX{})$ and $Y \approx N_Y\sim\mathcal{N}(\mu_Y = \MUY{}, \sigma_Y^2 = \VARY{})$. $X$ and $Y$ (and subsequently $N_X$ and $N_Y$) are independent because their underlying Bernoulli trials are independent.
+
+Next, we note that linear transformations of independent Normal random variables are Normal, and therefore $D = X - 2Y \sim\mathcal{N}(\mu_D = \mu_x - 2 \mu_y = \MUD{}, \sigma_D^2 = \sigma_X^2 + (-2)^2 \sigma_Y^2 = \VARD{})$. Using a continuity correction to account for approximating a discrete difference in viewers with continuous random variables, we obtain $P(X - 2Y > 0) \approx P(N_x - 2N_Y > 0.5) = 1 - P(D \leq 0.5) = 1 - \Phi\left(\dfrac{0.5 - \mu_D}{\sigma_D}\right)$, where $\Phi$ is the Standard Normal CDF.
+
+We compute this numerically using a Standard Normal Table and obtain $1 - \Phi(\ZTRANSFORM{}) \approx \SOLNBINOMIAL{}$.

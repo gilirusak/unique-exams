@@ -1,3 +1,19 @@
+# TODOs
+* Add `VARIABILITY` functionality.
+* Add installation instructions (e.g., pdflatex) to this README
+* Replace `cexprtk` with `asteval` https://newville.github.io/asteval/basics.html. cexprtk has lots of math functionality but is not well documented; asteval acts like Python eval and will allow us to generate strings, not just numbers.
+* Write a LaTeX `src` folder for the example problems in the SIGCSE paper.
+* Add arguments to the `make_pdfs.sh`, etc scripts so it makes sense
+
+# Requirements
+* `pdflatex`
+* `python3` installed and linked to `/usr/bin/python3`
+
+# Instructions
+1. `python3 scripts/make_permutations.py`
+1. `python3 scripts/make_pdfs.py 1` to make a single test item. To make ten in sequential order, `python3 scripts/make_pdfs.py 10`. To make a random set of 5, `python3 scripts/make_pdfs.py 5`. Note: everything is pseudorandom and seeded, found in the `scripts/config.py` file.
+1. `python3 scripts/make_pdfs.py N --soln` to make all solution files.
+
 # LaTeX `src` folder
 Two main files:
 * `quiz02.tex`

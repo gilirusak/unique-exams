@@ -1,31 +1,17 @@
-#!/usr/bin/python
-
-''' Description: generates latex for unique quiz 2, cs109 spring 2020
-    Author: Gili Rusak May 20, 2020
-    Input:  i (number from 1-M); unique_rule.csv (MxN), where M = number of students, N = number of random numbers in exam
-    Output: write find&replace unique exam to  tex/cs109_quiz02_i.tex
-'''
+"""
+Description: generates latex for unique quizzes
+Author: Gili Rusak and Lisa Yan
+Jan 13, 2021
+"""
 import argparse
-import csv
-from itertools import product 
-import numpy as np
-import sys, getopt
-import os
-from numpy import genfromtxt
 
-from scripts.config import *
-from scripts.util.latex import read_template
+from config import *
+from util.latex import read_template
 
-parser = argparse.ArgumentParser(description="Generates LaTeX documents.")
-parser.add_argument("quiz_number", type=int,
-                    help="Quiz number to generate")
-parser.add_argument("--soln", dest="is_soln", action="store_true",
-                    help="Flag for creating solution document")
-parser.add_argument("--template", dest="is_template", action="store_true",
-                    help="Flag for creating template document")
-args = parser.parse_args()
+def make_quiz_id(quiz_number):
+  return str(quiz_number).zfill(4)
 
-def get_template():
+def get_template(args):
   if args.is_soln:
     return EXAM_SOLN_TEMPLATE
   return EXAM_TEMPLATE
@@ -33,7 +19,7 @@ def get_template():
 def load_permutations_file():
   # get unique numbers for student number quiz_number
   with open(QUIZ_RULE_PERMUTATIONS_CSV, 'r', encoding="utf8") as f:
-    rules_array = genfromtxt(['\t'.join(tup) \
+    rules_array = np.genfromtxt(['\t'.join(tup) \
                       for tup in csv.reader(f, delimiter=',', quotechar='"')],
                              delimiter='\t',
                              dtype=str)
@@ -41,7 +27,7 @@ def load_permutations_file():
   # return header and student rows
   return rules_array[0,:], rules_array[1:]
 
-def prepare_headers():
+def prepare_headers(args):
   headers, _ = load_permutations_file()
   if not args.is_template:
     # we are reading in the *_defs.tex files, so our magic_template
@@ -55,7 +41,7 @@ def prepare_headers():
 
   return headers
 
-def prepare_exam_path(quiz_id):
+def prepare_exam_path(quiz_id, args):
   exam_dir = TEX_PATH_DIR
 
   if args.is_template:
@@ -68,8 +54,7 @@ def prepare_exam_path(quiz_id):
     if args.is_soln:
       exam_name += "_soln"
 
-  if not os.path.exists(exam_dir):
-    os.makedirs(exam_dir)
+  Path(exam_dir).mkdir(parents=True, exist_ok=True)
 
   exam_path = os.path.join(exam_dir, "{}.tex".format(exam_name))
   return exam_path
@@ -84,23 +69,46 @@ def get_quiz_rule(quiz_number):
   unique_rule = rules_array[quiz_number]
   return unique_rule
 
-def get_examid_key():
+def get_examid_key(args):
   if args.is_template:
     return "\\EXAMID"
   else:
     return "EXAMID_VALUE"
 
-def main():
-  quiz_number = args.quiz_number          # get exam number
-  quiz_id = str(quiz_number).zfill(4)     # generate quiz id
+############################# main ############################################
 
-  headers = prepare_headers()
+def make_args(quiz_number=None, is_soln=False, is_template=False):
+  """
+  Handles both calls from command-line and another python file.
+  """
+  parser = argparse.ArgumentParser(description="Generates LaTeX documents.")
+  parser.add_argument("quiz_number", type=int,
+                      help="Quiz number to generate")
+  parser.add_argument("--soln", dest="is_soln", action="store_true",
+                      help="Flag for creating solution document")
+  parser.add_argument("--template", dest="is_template", action="store_true",
+                        help="Flag for creating template document")
+
+  args_list = []
+  if quiz_number is not None:
+    args_list.append(str(quiz_number))
+  if is_soln:
+    args_list.append("--soln")
+  if is_template:
+    args_list.append("--template")
+  return parser.parse_args(args_list)
+
+def latex_main(args):
+  quiz_number = args.quiz_number          # get exam number
+  quiz_id = make_quiz_id(quiz_number)
+
+  headers = prepare_headers(args)
 
   unique_rule = get_quiz_rule(quiz_number)
   assert(len(unique_rule) == len(headers))
 
   # read tex template
-  template = read_template(get_template(), TEMPLATE_PATH_DIR, args)
+  template = read_template(get_template(args), TEMPLATE_PATH_DIR, args)
 
   magic_template = template
   # find and replace each value of header
@@ -118,13 +126,14 @@ def main():
       magic_template = magic_template.replace(INPUT_KEY, str(magic_str), 1)
 
   # if there is an EXAMID field, fill it in
-  magic_template = magic_template.replace(get_examid_key(), quiz_id, 1)
+  magic_template = magic_template.replace(get_examid_key(args), quiz_id, 1)
 
   # write new tex file
-  exam_path = prepare_exam_path(quiz_id)
+  exam_path = prepare_exam_path(quiz_id, args)
   with open(exam_path, 'w') as writer:
     writer.write(magic_template)
-    print("written to", writer.name)
+    print("\tWrote LaTeX template to", writer.name)
 
 if __name__ == '__main__':
-  main()
+  make_args()
+  latex_main(args)

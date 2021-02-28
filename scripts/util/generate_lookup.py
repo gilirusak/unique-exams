@@ -1,7 +1,3 @@
-import csv
-import numpy as np
-import os
-
 from scripts.config import *
 
 ROSTER_FPATH = "../2020-11-03-roster.csv"

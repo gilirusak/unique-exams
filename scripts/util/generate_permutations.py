@@ -3,17 +3,11 @@ The general form of generate_permutations.py
 
 Reads in from variables.csv and spits out a file of unique rules
 """
-import csv
 import fractions
-import numpy as np
-import os
-from itertools import product 
-from scipy import stats, special
+import itertools
 
-from scripts.config import *
-from scripts.util.variables import *
-
-np.random.seed(1234)     # deterministic
+from config import *
+from util.variables import *
 
 def generate_rule_permutations(reader, problem):
   print(problem)
@@ -38,7 +32,7 @@ def generate_rule_permutations(reader, problem):
   indep_names = [row['VARNAME'] for row in indep_params]
   # the different values for each of the names in indep_names
   indep_values = [row['VALUES'] for row in indep_params]
-  unique_rules = product(*indep_values)
+  unique_rules = itertools.product(*indep_values)
   valid_rules = []
 
   for rule in unique_rules:
@@ -60,13 +54,11 @@ def generate_rule_permutations(reader, problem):
       var_dict[dep_name] = dep_val
       update_symtab_var(symtab, dep_name, dep_val)
 
-    ## ignore invalid rows if constrainta fail
+    ## ignore invalid rows if constraints fail
     failed_constraint = False
     for row in constraints:
-      # if a constraint fails, continue to the next line
+      # if a constraint fails, continue to the next row
       if not evaluate_constraint(row, symtab):
-        if problem == "mle":
-          print("{}: gammaval {}, gammafactor {} = {}".format(row["FUNCTION"], var_dict["GAMMAVAL"], var_dict["GAMMAFACTOR"], var_dict["GAMMARATE"]))
         failed_constraint = True
         break
 
@@ -134,9 +126,9 @@ def write_unique_rules(unique_rules, header, fname):
     rulewriter.writerow(header)
     for row in unique_rules:
       rulewriter.writerow(row)
-    print("wrote file", rules_file.name)
+    print("wrote file", rules_file.name, "with", TOTAL_NUM_QUIZZES, "rows")
 
-if __name__ == '__main__':
+def permutations_main():
   vars_reader = load_variables_file(VARIABLES_FNAME)
   unique_rules = []
   header_all = []
@@ -155,3 +147,5 @@ if __name__ == '__main__':
 
   write_unique_rules(unique_rules, header_all, UNIQUE_RULES_FNAME)
 
+if __name__ == '__main__':
+  permutations_main()

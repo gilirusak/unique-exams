@@ -3,7 +3,7 @@ import cexprtk
 import csv
 import os
 
-from scripts.config import FUNC_MAP
+from config import FUNC_MAP
 
 FIELDNAMES = [
     "VARNAME",

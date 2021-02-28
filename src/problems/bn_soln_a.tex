@@ -1,8 +1,0 @@
-Note that given $D = 0$, $A\sim\Poi(\lambda = \DZEROLAMBA)$, and given $D = 1$, $A\sim\Poi(\lambda = \DONELAMBA)$. By Bayes' Theorem,
-
-\begin{align*}
-P(D = 0 | A = \VISITORSA) &= \dfrac{P(A = \VISITORSA | D = 0) P(D = 0)}{P(A = \VISITORSA | D = 0) P(D = 0) + P(A = \VISITORSA | D = 1) P(D = 1)} \\
-&= \dfrac{\frac{\DZEROLAMBA{}^{\VISITORSA{}} e^{-\DZEROLAMBA}}{\VISITORSA{}!} (1 - \DPROB)}{ \frac{\DZEROLAMBA{}^{\VISITORSA{}} e^{-\DZEROLAMBA}}{\VISITORSA{}!} (1 - \DPROB) + \frac{\DONELAMBA{}^{\VISITORSA{}} e^{-\DONELAMBA}}{\VISITORSA{}!} (\DPROB)} \\
-& = \dfrac{\DZEROLAMBA{}^{\VISITORSA{}} e^{-\DZEROLAMBA} (1 - \DPROB)}{ \DZEROLAMBA{}^{\VISITORSA{}} e^{-\DZEROLAMBA} (1 - \DPROB) + \DONELAMBA{}^{\VISITORSA{}} e^{-\DONELAMBA} (\DPROB)}
-  \approx \PROBDZERO
-\end{align*}
