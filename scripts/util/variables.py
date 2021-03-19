@@ -1,5 +1,5 @@
 import copy
-import cexprtk
+import asteval
 import csv
 import os
 
@@ -8,7 +8,6 @@ from config import FUNC_MAP
 FIELDNAMES = [
     "VARNAME",
     "PROBLEM",
-    "VARIABILITY",     # should be int
     "VARSYNC",         # should be a VARNAME (str)
     "SOLN",            # should be 1 or 0 or blank string
     "FUNCTION"
@@ -127,36 +126,28 @@ def get_sync_tup(row, var_dict, indep_dict, sync_dict):
   value = sync_values[possible_indep_values.index(indep_value)]
   return row['VARNAME'], value
 
-def get_func_tup(row, symtab):
-  value = evaluate_expression(row['FUNCTION'], symtab)
-  return row['VARNAME'], value
-  
-def evaluate_constraint(row, symtab):
-  return evaluate_expression(row['FUNCTION'], symtab)
+def get_varname(row):
+  return row['VARNAME']
 
-################################ symbol table wrapper for cexprtk
-def make_symtab(var_dict):
-  """
-  Make a cexprtk Symbol Table from the provided (varname, value) dictionary.
+def get_expression(row):
+  return row['FUNCTION']
 
-  Also add in any functions that reference external libraries.
-  Note that cexprtk doesn't accept any import commands, so you'll have to
-  custom define the functions.
-  """
-  symtab = cexprtk.Symbol_Table(var_dict)
-  update_symtab_functions(symtab)
-  return symtab
+##################### wrapper for asteval
+class Interpreter():
+  def __init__(self):
+    self.aeval = asteval.Interpreter()
+    for k, v in FUNC_MAP.items():     # defined in helper_functions
+      self.aeval.symtable[k] = v
 
-def update_symtab_var(symtab, varname, value):
-  symtab.variables[varname] = value
+  def update(self, varname, value):
+    self.aeval.symtable[varname] = value
 
-def update_symtab_functions(symtab):
-  """
-  CUSTOM FUNCTION that you must write 
-  """
-  for k, v in FUNC_MAP.items():     # defined in config.py
-    symtab.functions[k] = v
+  def batch_update(self, var_dict):
+    self.aeval.symtable.update(var_dict)
 
-def evaluate_expression(func_str, symtab):
-  expression = cexprtk.Expression(func_str, symtab)
-  return expression()
+  def evaluate(self, s):
+    result = self.aeval(s)
+    if len(self.aeval.error):
+      for err in self.aeval.error:
+        raise eval(err.get_error()[0])
+    return result

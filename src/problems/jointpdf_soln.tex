@@ -1,6 +1,17 @@
-\begin{equation*}
-\begin{split}
-E[Y] &= \int \int y f_{X,Y} (x,y) dx dy \\ &= \int_{0}^{\XBOUND{}} \int_{0}^{\YBOUND{}} \CONST{} y (\XVAR{} x^2 +\YVAR{} y) dx dy \\
-=\SOLNPDF{}
-\end{split}
-\end{equation*}
+%\begin{equation*}
+%\begin{split}
+%E[Y] &= \int \int y f_{X,Y} (x,y) dx dy \\ &= \int_{0}^{\XBOUND{}} \int_{0}^{\YBOUND{}} \CONST{} y (\XVAR{} x^2 +\YVAR{} y) dx dy \\
+%&=\SOLNPDF{}
+%\end{split}
+%\end{equation*}
+
+
+
+    \begin{align*}
+        E[Y] &= \int \int y f_{X,Y}(x,y) \,dx \,dy = \int_{0}^{\YBOUND{}} \int_{0}^{\XBOUND{}} (\CNUM{}/\CDENOM{}) y \left( \CX{} x^2 +  \CY{} y\right) \,dx \,dy \\
+        &= \int_{0}^{\YBOUND{}} (\CNUM{}/\CDENOM{})\left[ \frac{\CX{}}{3} y x^3 + \CX{} xy^2 \right]_0^{\XBOUND{}} \,dy 
+        = \int_{0}^{\YBOUND{}} (\CNUM{}/\CDENOM{})\left( \frac{\CX{} (\XBOUND{})^3 y}{3} + \CY{} (\XBOUND{}) y^2 \right)\,dy \\
+        &= (\CNUM{}/\CDENOM{})\left[ \frac{\CX{} (\XBOUND{})^3}{6} y^2 + \frac{\CY{} (\XBOUND{})}{3} y^3 \right]_0^{\YBOUND{}}
+        = \frac{\SOLNNUM{}}{\SOLNDENOM{}}
+    \end{align*}
+    

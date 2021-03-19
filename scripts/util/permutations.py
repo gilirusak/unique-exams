@@ -39,29 +39,33 @@ def generate_rule_permutations(reader, problem):
     rule = list(rule)
     indep_tups = zip(indep_names, rule)
     var_dict = make_vars(indep_tups)
+
+    aeval = Interpreter()
     
     ## get sync params
     for row in sync_params:
       sync_name, sync_val = get_sync_tup(row, var_dict, indep_dict, sync_dict)
       var_dict[sync_name] = sync_val
 
-    ## make functions
-    # first create the cexprtk dictionary
-    symtab = make_symtab(var_dict)
+    # add params to interpreter
+    aeval.batch_update(var_dict)
 
+    ## make dependent variables ("function" parameters)
     for row in func_params:
-      dep_name, dep_val = get_func_tup(row, symtab)
+      dep_name = get_varname(row)
+      dep_val = aeval.evaluate(get_expression(row))
       var_dict[dep_name] = dep_val
-      update_symtab_var(symtab, dep_name, dep_val)
+      aeval.update(dep_name, dep_val)
 
     ## ignore invalid rows if constraints fail
     failed_constraint = False
     for row in constraints:
       # if a constraint fails, continue to the next row
-      if not evaluate_constraint(row, symtab):
+      constraint = get_expression(row)
+      if not aeval.evaluate(constraint):
         failed_constraint = True
         break
-
+    
     if failed_constraint:
       continue
 
@@ -133,12 +137,7 @@ def permutations_main():
   unique_rules = []
   header_all = []
   for problem in PROBLEMS:
-    if problem in QUESTION_MAP:
-      # problem has a hard-coded function associated with it
-      header, valid_rules = QUESTION_MAP[problem]()
-      unique_rules_problem = verify_rule_count(valid_rules, problem)
-    else:
-      header, unique_rules_problem = generate_rule_permutations(vars_reader, problem)
+    header, unique_rules_problem = generate_rule_permutations(vars_reader, problem)
     unique_rules.append(unique_rules_problem)
     header_all += header
 

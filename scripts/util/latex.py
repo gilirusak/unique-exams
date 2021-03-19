@@ -1,263 +1,136 @@
 """
-Author: Lisa Yan October 5, 2020
-
-Like making templates for problem sets, 
-parses a particular tex file and writes out all text
-into a single, compilable LaTeX file.
+Description: generates latex for unique quizzes
+Author: Gili Rusak and Lisa Yan
+Jan 13, 2021
 """
+import argparse
 
-import os
-import re
-import shutil
+from config import *
+from util.latex_helper import read_template
 
-def read_template(template_fpath, dirname, args):
-  return ''.join(read_template_lines(template_fpath, dirname, args), )
+def make_quiz_id(quiz_number):
+  return str(quiz_number).zfill(4)
 
-def read_template_lines(template_fpath, dirname, args):
-  template_lines = []
-  with open(os.path.join(dirname, template_fpath), 'r', encoding="utf8") as f:
-    for line in f.readlines():
-      if is_input_line(line):
-        # load content in from another tex file
-        addtl_fname = get_input_fname(line)
-        if not addtl_fname.endswith(".tex"):
-          if addtl_fname.startswith("#"): # this is part of some argument function
-            template_lines.append(line)
-            continue
-          addtl_fname = "{}.tex".format(addtl_fname)
-        if is_def_file(addtl_fname):
-          # file is *_defs.tex
-          if args.is_template:
-            # don't load for student template
-            continue
+def get_template(args):
+  if args.is_soln:
+    return EXAM_SOLN_TEMPLATE
+  return EXAM_TEMPLATE
 
-          template_lines += process_def_file_lines(addtl_fname, dirname)
-        elif is_handwritten_file(addtl_fname):
-          # file is quizblank_*.tex
-          if args.is_template:
-            # don't load for student template
-            continue
-          template_lines += read_template_lines(addtl_fname, dirname, args)
-        elif is_solnwritten_file(addtl_fname):
-          template_lines += placeholder_soln_lines()
-        else:
-          # copy external file text directly into this template
-          template_lines += read_template_lines(addtl_fname, dirname, args)
-      elif is_answer_space(line):
-        if args.is_template:
-          # for student template, substitute for shaded block option
-          template_lines += shaded_block(line, dirname, args)
-        elif args.is_soln:
-          template_lines += shaded_answer_block(line, dirname, args)
-        else:
-          template_lines += blank_answer_block(line, dirname, args)
-      elif is_pagebreak(line):
-        # only append pagebreak if blank PDF
-        if not(args.is_template or args.is_soln):
-          template_lines.append(line)
+def load_permutations_file():
+  # get unique numbers for student number quiz_number
+  with open(QUIZ_RULE_PERMUTATIONS_CSV, 'r', encoding="utf8") as f:
+    rules_array = np.genfromtxt(['\t'.join(tup) \
+                      for tup in csv.reader(f, delimiter=',', quotechar='"')],
+                             delimiter='\t',
+                             dtype=str)
 
-      else:
-        template_lines.append(line)
-  return template_lines
+  # return header and student rows
+  return rules_array[0,:], rules_array[1:]
 
-def strip_line(line):
-  line = line.split('%')[0] # exclude comments
-  return line.strip()
-
-def is_input_line(line):
-  return strip_line(line).startswith("\\input{")
-
-def get_input_fname(line):
-  return line.split("\\input{")[-1].split('}')[0]
-
-def is_def_file(fpath):
-  return fpath.strip(".tex").endswith("_defs")
-
-def is_handwritten_file(fpath):
-  return fpath.startswith("quizblank")
-
-def is_solnwritten_file(fpath):
-  return fpath.startswith("quizsoln")
-
-def is_answer_space(line):
-  return strip_line(line).startswith("\\answer")
-
-def is_pagebreak(line):
-  return strip_line(line).startswith("\\problempagebreak")
-
-def process_def_file_lines(template_fpath, dirname):
-  """
-  For all newcommands in this file, replace the defined value with
-  the argument name + _VALUE, without the leading forward slash.
-  ex: \newcommand{\XUBOUND}{3} --> \newcommand{\XUBOUND}{XUBOUND_VALUE}
-  """
-  def_lines = ['\n']
-  with open(os.path.join(dirname, template_fpath), 'r') as f:
-    for line in f.readlines():
-      regex = r"\{(.*?)\}"
-      params = re.findall(regex, line)
-      if len(params) == 2:
-        argname, argval = params
-        def_lines.append("\\newcommand{{{}}}{{{}}}\n".format(
-                          argname, "{}_VALUE".format(argname.strip('\\'))))
-      else:
-        def_lines.append(line)
-
-  def_lines += ['\n']
-  return def_lines 
-
-def shaded_block(line, dirname, args):
-  # for student templates
-  shaded_block_lines = [
-    "    \\begin{shaded}\n",
-    "\n"
-    ]
-  # the below puts in the answer block too
-  shaded_block_lines += process_fillintheblank(line, dirname, args)
-  shaded_block_lines += [
-    "    \\end{shaded}\n",
-    "\n",
-    "\n"
-      ]
-  return shaded_block_lines
-
-def process_fillintheblank(line, dirname, args):
-  # parse numeric blank for student templates and put it in
-  # as of 10/6/20: answerchoice, answernumeric
-  line = strip_line(line)
-  if line.startswith("\\answerchoice"):
-    params = get_params(line)
-    choice1, choice2 = params[:2]
-    return [
-      "    % bold your choice below\n",
-      "    \\vspace*{2em} \\hspace*{0.5in}\n",
-      "    {}     % to bold, \\textbf{{{}}}\n".format(choice1, choice1),
-      "    \\hspace*{2pt} / \\hspace*{2pt}\n",
-      "    {}     % to bold, \\textbf{{{}}}\n".format(choice2, choice2),
-      "\n"
-        ] + answer_block()
-                  
-  elif line.startswith("\\answernumeric"):
-    params = get_params(line)
-    units_str = params[1] # blankheight, units, postanswerheight
-    return answer_block() + \
-        [
-"\n",  
-"    \\begin{tabular}{l  p{.5in} p{2in} l}\n",
-"    In addition to providing an expression above, \\\\\n",
-"    please compute a numeric answer:&\n",
-"    &           % replace with & 9999 (keeping ampersand (&) on left, 9999 being your answer)\n",
-"    & {} \\\\\n".format(units_str),
-"    \\cline{3-3}\n",
-"    \\end{tabular}\n"
-    ]
-  elif line.startswith("\\answercoding"):
-    params = get_params(line)
-    blank_code_fname, soln_code_fname = params
-    if not blank_code_fname.endswith(".tex"):
-      blank_code_fname = "{}.tex".format(blank_code_fname)
-    return read_template_lines(blank_code_fname, dirname, args) + ["\n"]
-  elif line.startswith("\\answercodea"):
-    # quiz 2 specific
-    params = get_params(line)
-    return answer_block() + \
-        [
-"\n",
-"    \\begin{tabular}{p{1.6in} p{1.5in} b{.9in} p{1.5in}}\n",
-"    \\multicolumn{4}{l}{In addition to providing justification above, please compute numeric answers:} \\\\ \\\\\n",
-"    Smallest \\texttt{flop} return: &\n",
-"            % write your flop smallest return value here (replace line)\n",
-"    & probability: &\n",
-"    		% write your flop probability here (replace line)\n",
-"    \\\\ \\cline{2-2} \\cline{4-4} \\\\\n",
-"    Second smallest \\\\\n",
-"    \\texttt{flop} return: &\n",
-"            % write your flop second smallest return value here (replace line)\n",
-"    & probability: &\n",
-"    		% write your flop probability here (replace line)\n",
-"    \\\\\n",
-"    \\cline{2-2} \\cline{4-4}\n",
-"    \\end{tabular}\n",
-    ]
-  elif line.startswith("\\answercodeb"):
-    # quiz 2 specific
-    params = get_params(line)
-    return answer_block() + \
-        [
-"\n",  
-"    \\begin{tabular}{l  p{1.7in} p{.1in} p{1.7in}}\n",
-"    \\multirow{3}{2in}{In addition to providing justification above,\n",
-"    please compute numeric answers:} \\\\ \\\\\n",
-"    &  \\texttt{flip}:\n",
-"    			% write your flip answer here (replace line)\n",
-"    & &  \\texttt{flop}:\n",
-"    			% write your flop answer here (replace line)\n",
-"    \\\\\n",
-"    \\cline{2-2}\n",
-"    \\cline{4-4}\n",
-"    \\end{tabular}\n"
-    ]
-  elif line.startswith("\\answerpredict"):
-    # quiz 3 specific
-    params = get_params(line)
-    return answer_block() + \
-        [
-"\n",
-"    Your prediction: \\hspace*{0.1in}\n",
-"    $\\hat{Y} = 0$ % to underline, \\underline{$\\hat{Y} = 0$}\n",
-"    \\hspace*{2pt} / \n",
-"    $\\hat{Y} = 1$ % to underline, \\underline{$\\hat{Y} = 1$}\n"
-        ]
-
+def prepare_headers(args):
+  headers, _ = load_permutations_file()
+  if not args.is_template:
+    # we are reading in the *_defs.tex files, so our magic_template
+    # should replace the constants in *_defs.tex files
+    headers = ["{}_VALUE".format(header) for header in headers]
   else:
-    return answer_block()
+    # we will not read in any *_defs.tex files,
+    # so we will directly replace the constant to be the variable name.
+    # LaTeX prepends a forward slash (\) to all variable names.
+    headers = ["\\{}".format(header) for header in headers]
 
-def answer_block():
-  return [
-    "    \\begin{answer}\n",
-    "\n",
-    "       % your answer here\n",
-    "\n",
-    "    \\end{answer}\n",
-      ]
+  return headers
 
-def shaded_answer_block(line, dirname, args):
-  # for \answerspace, \answernumeric, \answerchoice, the last param
-  # is always the solution file
-  soln_fname = get_params(line)[-1]
-  if not soln_fname.endswith(".tex"):
-    soln_fname = "{}.tex".format(soln_fname)
+def prepare_exam_path(quiz_id, args):
+  exam_dir = TEX_PATH_DIR
 
-  return [
-    "    \\begin{shaded}\n",
-    "    \\begin{answer}\n",
-    "\n"] + \
-        read_template_lines(soln_fname, dirname, args) + \
-        [
-    "\n",
-    "    \\end{answer}\n",
-    "    \\end{shaded}\n",
-      ]
-
-def blank_answer_block(line, dirname, args):
-  line = strip_line(line)
-  if line.startswith("\\answercoding"):
-    # need to explicitly load in the file
-    code_fname = get_params(line)[0]
-    if not code_fname.endswith(".tex"):
-      code_fname = "{}.tex".format(code_fname)
-
-    return read_template_lines(code_fname, dirname, args)
+  if args.is_template:
+    exam_dir += "_template"
+    exam_name = "{}_template_{}".format(EXAM_NAME, quiz_id)
   else:
-    return [line] # otherwise, definition fully internal
+    if args.is_soln:
+      exam_dir += "_soln"
+    exam_name = "{}_{}".format(EXAM_NAME, quiz_id)
+    if args.is_soln:
+      exam_name += "_soln"
 
+  Path(exam_dir).mkdir(parents=True, exist_ok=True)
 
-def get_params(line):
-  regex = r"\{(.*?)\}"
-  params = re.findall(regex, line)
-  return params
+  exam_path = os.path.join(exam_dir, "{}.tex".format(exam_name))
+  return exam_path
 
-def placeholder_soln_lines():
-  return [
-   "    \\newcommand{\problempagebreak}[1]{}\n"
-      ]
+def get_quiz_rule(quiz_number):
+  # safety checks
+  assert(quiz_number >= 0 and quiz_number < TOTAL_NUM_QUIZZES)
+
+  # row 1 is default quiz with index 0
+  _, rules_array = load_permutations_file()
+
+  unique_rule = rules_array[quiz_number]
+  return unique_rule
+
+def get_examid_key(args):
+  if args.is_template:
+    return "\\EXAMID"
+  else:
+    return "EXAMID_VALUE"
+
+############################# main ############################################
+
+def make_args(quiz_number=None, is_soln=False, is_template=False):
+  """
+  Handles both calls from command-line and another python file.
+  """
+  parser = argparse.ArgumentParser(description="Generates LaTeX documents.")
+  parser.add_argument("quiz_number", type=int,
+                      help="Quiz number to generate")
+  parser.add_argument("--soln", dest="is_soln", action="store_true",
+                      help="Flag for creating solution document")
+  parser.add_argument("--template", dest="is_template", action="store_true",
+                        help="Flag for creating template document")
+
+  args_list = []
+  if quiz_number is not None:
+    args_list.append(str(quiz_number))
+  if is_soln:
+    args_list.append("--soln")
+  if is_template:
+    args_list.append("--template")
+  return parser.parse_args(args_list)
+
+def latex_main(args):
+  quiz_number = args.quiz_number          # get exam number
+  quiz_id = make_quiz_id(quiz_number)
+
+  headers = prepare_headers(args)
+
+  unique_rule = get_quiz_rule(quiz_number)
+  assert(len(unique_rule) == len(headers))
+
+  # read tex template
+  template = read_template(get_template(args), TEMPLATE_PATH_DIR, args)
+
+  magic_template = template
+  # find and replace each value of header
+  for i, INPUT_KEY in enumerate(headers):
+    magic_str = unique_rule[i]
+    if args.is_template:
+      # could have multiple occurrences, since we are not using def
+      # first remove any empty arg calls
+      magic_template = magic_template.replace(INPUT_KEY + "{}", INPUT_KEY)
+      magic_template = magic_template.replace(INPUT_KEY, str(magic_str))
+    else:
+      # each variable should only be defined once. If there's
+      # multiple definitions, everything collapses.
+      assert(template.count("{" + INPUT_KEY) <= 1) # in case substrings
+      magic_template = magic_template.replace(INPUT_KEY, str(magic_str), 1)
+
+  # if there is an EXAMID field, fill it in
+  magic_template = magic_template.replace(get_examid_key(args), quiz_id, 1)
+
+  # write new tex file
+  exam_path = prepare_exam_path(quiz_id, args)
+  with open(exam_path, 'w') as writer:
+    writer.write(magic_template)
+    print("\tWrote LaTeX template to", writer.name)
+  return exam_path
